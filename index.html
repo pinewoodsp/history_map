@@ -19,6 +19,7 @@
             overflow-x: hidden;
         }
 
+        /* ===== 상단 컨트롤 ===== */
         .controls {
             text-align: center;
             padding: 30px 20px 10px;
@@ -35,8 +36,14 @@
 
         .controls p {
             color: #888;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             font-size: 14px;
+        }
+
+        .size-info {
+            color: #555;
+            font-size: 12px;
+            margin-bottom: 20px;
         }
 
         .button-group {
@@ -71,18 +78,19 @@
             font-size: 13px;
         }
 
+        /* ===== 3D 씬 ===== */
         .scene-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
-            min-height: 500px;
+            padding: 30px 20px 50px;
+            min-height: 600px;
         }
 
         .scene {
-            width: 700px;
-            height: 400px;
-            perspective: 1500px;
+            width: 900px;
+            height: 580px;
+            perspective: 2000px;
             perspective-origin: 50% 50%;
             cursor: grab;
         }
@@ -91,6 +99,7 @@
             cursor: grabbing;
         }
 
+        /* ===== 리플렛 ===== */
         .leaflet {
             width: 100%;
             height: 100%;
@@ -100,10 +109,11 @@
             transform: rotateX(-10deg) rotateY(-20deg);
         }
 
+        /* ===== 패널 (A4 3등분 비율: 198px x 420px ≈ 99mm:210mm) ===== */
         .panel {
             position: absolute;
-            width: 220px;
-            height: 320px;
+            width: 198px;
+            height: 420px;
             transform-style: preserve-3d;
             transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
@@ -113,128 +123,126 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 4px;
+            border-radius: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .panel-front {
-            background: linear-gradient(145deg, #1e1e3a, #2a2a5a);
+            background: #ffffff;
         }
 
         .panel-back {
-            background: linear-gradient(145deg, #2a1a1a, #4a2a2a);
+            background: #ffffff;
             transform: rotateY(180deg);
         }
 
+        /* ===== 패널 내용 ===== */
         .panel-content {
             text-align: center;
             padding: 20px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         .panel-number {
-            font-size: 80px;
+            font-size: 72px;
             font-weight: 900;
             line-height: 1;
-            margin-bottom: 15px;
-            opacity: 0.9;
+            margin-bottom: 12px;
+            color: #ddd;
         }
 
         .panel-label {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            color: #aaa;
             line-height: 1.5;
             word-break: keep-all;
         }
 
-        .panel-right .panel-back .panel-number {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .panel-right .panel-back {
-            border-color: rgba(255, 107, 107, 0.4);
-            box-shadow: inset 0 0 30px rgba(255, 107, 107, 0.1);
+        .panel-size {
+            position: absolute;
+            bottom: 15px;
+            font-size: 10px;
+            color: #ccc;
         }
 
-        .panel-right .panel-front .panel-number {
-            background: linear-gradient(135deg, #ffd93d, #f0932b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .panel-right .panel-front {
-            border-color: rgba(255, 217, 61, 0.4);
-            box-shadow: inset 0 0 30px rgba(255, 217, 61, 0.1);
-        }
-
-        .panel-center > .panel-front .panel-number {
-            background: linear-gradient(135deg, #6bcb77, #26de81);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .panel-center > .panel-front {
-            border-color: rgba(107, 203, 119, 0.4);
-            box-shadow: inset 0 0 30px rgba(107, 203, 119, 0.1);
+        /* ===== 접선 표시 ===== */
+        .panel-face::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: repeating-linear-gradient(
+                to bottom,
+                #ddd 0px,
+                #ddd 4px,
+                transparent 4px,
+                transparent 8px
+            );
         }
 
-        .panel-left .panel-front .panel-number {
-            background: linear-gradient(135deg, #4d96ff, #3742fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .panel-left .panel-front {
-            border-color: rgba(77, 150, 255, 0.4);
-            box-shadow: inset 0 0 30px rgba(77, 150, 255, 0.1);
+        .panel-left .panel-front::before,
+        .panel-left .panel-back::before {
+            right: 0;
         }
 
-        .panel-left .panel-back .panel-number {
-            background: linear-gradient(135deg, #a55eea, #8854d0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .panel-left .panel-back {
-            border-color: rgba(165, 94, 234, 0.4);
-            box-shadow: inset 0 0 30px rgba(165, 94, 234, 0.1);
+        .panel-center > .panel-front::before,
+        .panel-center > .panel-back::before {
+            right: 0;
         }
 
-        .panel-center > .panel-back .panel-number {
-            background: linear-gradient(135deg, #fd79a8, #e84393);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .panel-center > .panel-back {
-            border-color: rgba(253, 121, 168, 0.4);
-            box-shadow: inset 0 0 30px rgba(253, 121, 168, 0.1);
-        }
-
-        .panel-left {
+        .panel-right .panel-front::before,
+        .panel-right .panel-back::before {
             left: 0;
+        }
+
+        /* ===== 면별 번호 색상 ===== */
+        .panel-right .panel-back .panel-number { color: #ff6b6b; }
+        .panel-right .panel-front .panel-number { color: #f0932b; }
+        .panel-center > .panel-front .panel-number { color: #26de81; }
+        .panel-left .panel-front .panel-number { color: #4d96ff; }
+        .panel-left .panel-back .panel-number { color: #a55eea; }
+        .panel-center > .panel-back .panel-number { color: #e84393; }
+
+        /* 앞면 - 살짝 그림자 */
+        .panel-front {
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+        }
+        .panel-back {
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== 패널 위치 ===== */
+        .panel-left {
+            left: 100px;
             top: 50%;
             transform: translateY(-50%);
             transform-origin: right center;
         }
 
         .panel-center {
-            left: 220px;
+            left: 298px;
             top: 50%;
             transform: translateY(-50%);
             transform-style: preserve-3d;
         }
 
         .panel-right {
-            left: 220px;
+            left: 198px;
             top: 0;
             transform-origin: left center;
         }
 
+        /* ===== 접기 상태 ===== */
         .leaflet.folded .panel-left {
             transform: translateY(-50%) rotateY(180deg);
         }
@@ -256,8 +264,9 @@
             transform: rotateY(0deg);
         }
 
+        /* ===== 하단 안내 ===== */
         .panel-info {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto 40px;
             padding: 25px 30px;
             background: rgba(255, 255, 255, 0.05);
@@ -296,37 +305,87 @@
             font-weight: 800;
             font-size: 14px;
             flex-shrink: 0;
+            color: #fff;
         }
 
-        .info-item:nth-child(1) .num { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
-        .info-item:nth-child(2) .num { background: linear-gradient(135deg, #ffd93d, #f0932b); color: #333; }
-        .info-item:nth-child(3) .num { background: linear-gradient(135deg, #6bcb77, #26de81); color: #333; }
-        .info-item:nth-child(4) .num { background: linear-gradient(135deg, #4d96ff, #3742fa); }
-        .info-item:nth-child(5) .num { background: linear-gradient(135deg, #a55eea, #8854d0); }
-        .info-item:nth-child(6) .num { background: linear-gradient(135deg, #fd79a8, #e84393); }
+        .info-item:nth-child(1) .num { background: #ff6b6b; }
+        .info-item:nth-child(2) .num { background: #f0932b; }
+        .info-item:nth-child(3) .num { background: #26de81; color: #333; }
+        .info-item:nth-child(4) .num { background: #4d96ff; }
+        .info-item:nth-child(5) .num { background: #a55eea; }
+        .info-item:nth-child(6) .num { background: #e84393; }
 
         .info-item span:last-child {
             font-size: 13px;
             color: #aaa;
         }
 
-        @media (max-width: 768px) {
-            .scene { width: 500px; height: 350px; perspective: 1200px; }
-            .panel { width: 160px; height: 260px; }
-            .panel-center { left: 160px; }
-            .panel-right { left: 160px; }
-            .panel-number { font-size: 60px; }
+        .a4-note {
+            margin-top: 15px;
+            padding: 12px 16px;
+            background: rgba(77, 150, 255, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #4d96ff;
+            font-size: 12px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* ===== 반응형 ===== */
+        @media (max-width: 950px) {
+            .scene {
+                width: 650px;
+                height: 450px;
+                perspective: 1600px;
+            }
+            .panel {
+                width: 148px;
+                height: 314px;
+            }
+            .panel-left { left: 60px; }
+            .panel-center { left: 208px; }
+            .panel-right { left: 148px; }
+            .panel-number { font-size: 56px; }
+        }
+
+        @media (max-width: 700px) {
+            .scene {
+                width: 450px;
+                height: 360px;
+                perspective: 1200px;
+            }
+            .panel {
+                width: 110px;
+                height: 233px;
+            }
+            .panel-left { left: 30px; }
+            .panel-center { left: 140px; }
+            .panel-right { left: 110px; }
+            .panel-number { font-size: 40px; }
+            .panel-label { font-size: 11px; }
             .info-grid { grid-template-columns: 1fr; }
             .controls h2 { font-size: 22px; }
         }
 
-        @media (max-width: 520px) {
-            .scene { width: 360px; height: 300px; perspective: 1000px; }
-            .panel { width: 115px; height: 220px; }
-            .panel-center { left: 115px; }
-            .panel-right { left: 115px; }
-            .panel-number { font-size: 45px; }
-            .button-group button { padding: 8px 16px; font-size: 12px; }
+        @media (max-width: 480px) {
+            .scene {
+                width: 330px;
+                height: 280px;
+                perspective: 1000px;
+            }
+            .panel {
+                width: 82px;
+                height: 174px;
+            }
+            .panel-left { left: 20px; }
+            .panel-center { left: 102px; }
+            .panel-right { left: 82px; }
+            .panel-number { font-size: 30px; }
+            .panel-label { font-size: 9px; }
+            .button-group button {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -334,6 +393,7 @@
     <div class="controls">
         <h2>동작 관악구 역사적 명소 리플렛</h2>
         <p>3D 3단 리플렛 미리보기</p>
+        <div class="size-info">A4 용지 (297mm × 210mm) 기준 · 각 면 99mm × 210mm</div>
         <div class="button-group">
             <button id="btn-folded" class="active">접힌 상태</button>
             <button id="btn-half">반쯤 펼침</button>
@@ -346,46 +406,55 @@
     <div class="scene-container">
         <div class="scene" id="scene">
             <div class="leaflet" id="leaflet">
+                <!-- 왼쪽 패널 -->
                 <div class="panel panel-left">
                     <div class="panel-face panel-front">
                         <div class="panel-content">
                             <div class="panel-number">4</div>
-                            <div class="panel-label">앞면 - 왼쪽 안쪽 면</div>
+                            <div class="panel-label">앞면 - 왼쪽<br>(안쪽으로 접히는 면)</div>
+                            <div class="panel-size">99mm × 210mm</div>
                         </div>
                     </div>
                     <div class="panel-face panel-back">
                         <div class="panel-content">
                             <div class="panel-number">5</div>
                             <div class="panel-label">뒷면 - 왼쪽</div>
+                            <div class="panel-size">99mm × 210mm</div>
                         </div>
                     </div>
                 </div>
 
+                <!-- 가운데 패널 -->
                 <div class="panel panel-center">
                     <div class="panel-face panel-front">
                         <div class="panel-content">
                             <div class="panel-number">3</div>
                             <div class="panel-label">앞면 - 가운데</div>
+                            <div class="panel-size">99mm × 210mm</div>
                         </div>
                     </div>
                     <div class="panel-face panel-back">
                         <div class="panel-content">
                             <div class="panel-number">6</div>
                             <div class="panel-label">뒷면 - 가운데</div>
+                            <div class="panel-size">99mm × 210mm</div>
                         </div>
                     </div>
 
+                    <!-- 오른쪽 패널 -->
                     <div class="panel panel-right">
                         <div class="panel-face panel-front">
                             <div class="panel-content">
                                 <div class="panel-number">2</div>
                                 <div class="panel-label">앞면 - 오른쪽</div>
+                                <div class="panel-size">99mm × 210mm</div>
                             </div>
                         </div>
                         <div class="panel-face panel-back">
                             <div class="panel-content">
                                 <div class="panel-number">1</div>
-                                <div class="panel-label">뒷면 - 표지</div>
+                                <div class="panel-label">표지</div>
+                                <div class="panel-size">99mm × 210mm</div>
                             </div>
                         </div>
                     </div>
@@ -397,12 +466,18 @@
     <div class="panel-info">
         <h3>면 구성 안내</h3>
         <div class="info-grid">
-            <div class="info-item"><span class="num">1</span><span>표지 (접었을 때 맨 앞)</span></div>
-            <div class="info-item"><span class="num">2</span><span>앞면 오른쪽</span></div>
+            <div class="info-item"><span class="num">1</span><span>표지 (접었을 때 맨 앞에 보이는 면)</span></div>
+            <div class="info-item"><span class="num">2</span><span>앞면 오른쪽 (표지 뒷면)</span></div>
             <div class="info-item"><span class="num">3</span><span>앞면 가운데</span></div>
-            <div class="info-item"><span class="num">4</span><span>앞면 왼쪽 (안쪽 접히는 면)</span></div>
+            <div class="info-item"><span class="num">4</span><span>앞면 왼쪽 (안쪽으로 먼저 접히는 면)</span></div>
             <div class="info-item"><span class="num">5</span><span>뒷면 왼쪽</span></div>
-            <div class="info-item"><span class="num">6</span><span>뒷면 가운데</span></div>
+            <div class="info-item"><span class="num">6</span><span>뒷면 가운데 (접었을 때 뒷면)</span></div>
+        </div>
+        <div class="a4-note">
+            <strong>A4 기준 실제 크기</strong><br>
+            전체 펼침: 297mm × 210mm (가로형)<br>
+            각 면: 99mm × 210mm (3등분)<br>
+            접었을 때: 99mm × 210mm (1면 크기)
         </div>
     </div>
 
@@ -438,54 +513,86 @@
                 leaflet.style.transform = 'rotateX(' + curRotX + 'deg) rotateY(' + curRotY + 'deg)';
             }
 
-            btnFolded.addEventListener('click', function() { setState('folded'); setActiveButton(btnFolded); });
-            btnHalf.addEventListener('click', function() { setState('half'); setActiveButton(btnHalf); });
-            btnOpen.addEventListener('click', function() { setState('open'); setActiveButton(btnOpen); });
+            btnFolded.addEventListener('click', function() {
+                setState('folded');
+                setActiveButton(btnFolded);
+            });
+
+            btnHalf.addEventListener('click', function() {
+                setState('half');
+                setActiveButton(btnHalf);
+            });
+
+            btnOpen.addEventListener('click', function() {
+                setState('open');
+                setActiveButton(btnOpen);
+            });
 
             btnFlip.addEventListener('click', function() {
                 isFlipped = !isFlipped;
-                if (isFlipped) { rotY = 180; btnFlip.classList.add('active'); }
-                else { rotY = -20; btnFlip.classList.remove('active'); }
-                rotX = -10; curRotX = rotX; curRotY = rotY;
+                if (isFlipped) {
+                    rotY = 180;
+                    btnFlip.classList.add('active');
+                } else {
+                    rotY = -20;
+                    btnFlip.classList.remove('active');
+                }
+                rotX = -10;
+                curRotX = rotX;
+                curRotY = rotY;
                 updateTransform();
             });
 
+            // 마우스 드래그
             scene.addEventListener('mousedown', function(e) {
-                isDragging = true; startX = e.clientX; startY = e.clientY;
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
                 leaflet.style.transition = 'none';
             });
+
             document.addEventListener('mousemove', function(e) {
                 if (!isDragging) return;
-                curRotY = rotY + (e.clientX - startX) * 0.5;
-                curRotX = rotX - (e.clientY - startY) * 0.5;
+                curRotY = rotY + (e.clientX - startX) * 0.4;
+                curRotX = rotX - (e.clientY - startY) * 0.4;
                 if (curRotX < -60) curRotX = -60;
                 if (curRotX > 60) curRotX = 60;
                 updateTransform();
             });
+
             document.addEventListener('mouseup', function() {
                 if (isDragging) {
-                    isDragging = false; rotX = curRotX; rotY = curRotY;
+                    isDragging = false;
+                    rotX = curRotX;
+                    rotY = curRotY;
                     leaflet.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 }
             });
 
+            // 터치 지원
             scene.addEventListener('touchstart', function(e) {
                 if (e.touches.length === 1) {
-                    isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
                     leaflet.style.transition = 'none';
                 }
             });
+
             document.addEventListener('touchmove', function(e) {
                 if (!isDragging || e.touches.length !== 1) return;
-                curRotY = rotY + (e.touches[0].clientX - startX) * 0.5;
-                curRotX = rotX - (e.touches[0].clientY - startY) * 0.5;
+                curRotY = rotY + (e.touches[0].clientX - startX) * 0.4;
+                curRotX = rotX - (e.touches[0].clientY - startY) * 0.4;
                 if (curRotX < -60) curRotX = -60;
                 if (curRotX > 60) curRotX = 60;
                 updateTransform();
             });
+
             document.addEventListener('touchend', function() {
                 if (isDragging) {
-                    isDragging = false; rotX = curRotX; rotY = curRotY;
+                    isDragging = false;
+                    rotX = curRotX;
+                    rotY = curRotY;
                     leaflet.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 }
             });
