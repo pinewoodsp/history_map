@@ -7,20 +7,19 @@
     <style>
         :root {
             --bg: #d6cfc4;
-            --panel-w: 198px;
-            --panel-h: 420px;
+            /* 💎 화질 개선을 위해 물리적 픽셀 크기를 약 2.5배인 고해상도로 상향 조정 */
+            --panel-w: 330px;
+            --panel-h: 700px;
             --ctrl-bg: #2b2118;
             --btn-border: #b89060;
             --btn-text: #e8d5b0;
             --btn-active-bg: #7a5230;
             --fold-line: rgba(0,0,0,0.18);
+            
+            /* 📱 모바일/PC 반응형 크기 조절을 위한 기본 스케일 값 */
+            --scene-scale: 1; 
 
-            /* 
-              [깃허브 페이지 이미지 설정 경로]
-              index.html 파일과 같은 위치(같은 폴더)에 
-              앞면 이미지(front.png)와 뒷면 이미지(back.png)를 업로드하면 자동으로 연결됩니다.
-              만약 파일명이 다르면 아래의 파일명을 수정해주세요.
-            */
+            /* 깃허브 페이지 이미지 매핑 */
             --img-front: url('./front.png');
             --img-back: url('./back.png');
         }
@@ -94,7 +93,7 @@
             color: #fff8ec;
         }
 
-        /* 🔍 확대/축소 컨트롤 스타일 */
+        /* 🔍 확대/축소 컨트롤러 */
         .zoom-control {
             display: flex;
             align-items: center;
@@ -123,16 +122,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 50px 20px;
-            min-height: 560px;
+            padding: 20px;
+            min-height: 600px;
             background: var(--bg);
             background-image: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.18) 0%, transparent 70%);
         }
 
         .scene {
-            width: 750px;
-            height: 560px;
-            perspective: 2200px;
+            width: 1000px;
+            height: 750px;
+            perspective: 2500px;
             cursor: grab;
             display: flex;
             justify-content: center;
@@ -142,12 +141,19 @@
         .scene:active { cursor: grabbing; }
 
         .leaflet {
-            width: 594px; /* 패널 3개 너비의 합 (198px * 3) */
+            width: 990px; /* 고해상도 패널 3개 너비 합 (330px * 3) */
             height: var(--panel-h);
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform: rotateX(-8deg) rotateY(-15deg);
+            
+            /* 기본 JS 제어용 CSS 변수 선언 */
+            --rotX: -8;
+            --rotY: -15;
+            --zoom: 1;
+
+            /* ⚡️ 스케일 곱연산을 적용하여 원본 화질을 유지하며 부드럽게 화면 배율 조절 */
+            transform: scale(calc(var(--scene-scale) * var(--zoom))) rotateX(calc(var(--rotX) * 1deg)) rotateY(calc(var(--rotY) * 1deg));
         }
 
         /* ── 패널 기본 ── */
@@ -168,42 +174,41 @@
             background-repeat: no-repeat;
             overflow: hidden;
 
-            /* ✨ 화질 개선 속성 추가 */
-            image-rendering: -webkit-optimize-contrast; /* 고대비 선명화 */
-            image-rendering: crisp-edges;
-            transform: translateZ(0); /* GPU 가속 유도 */
+            /* ✨ 극강의 선명도를 유지하기 위한 하드웨어 가속 유도 */
+            transform: translateZ(0);
+            will-change: transform;
         }
 
-        /* ── 앞면 이미지 ── */
-        /*  패널4: 앞면 왼쪽 (좌측 1/3) */
+        /* ── 앞면 이미지 매핑 (기본 유지) ── */
+        /* 패널4: 앞면 왼쪽 (좌측 1/3) */
         .panel-left > .panel-front {
             background-image: var(--img-front);
             background-position: 0% center;
         }
-        /*  패널3: 앞면 가운데 (중간 1/3) */
+        /* 패널3: 앞면 가운데 (중간 1/3) */
         .panel-center > .panel-front {
             background-image: var(--img-front);
             background-position: 50% center;
         }
-        /*  패널2: 앞면 오른쪽 (우측 1/3) */
+        /* 패널2: 앞면 오른쪽 (우측 1/3) */
         .panel-right > .panel-front {
             background-image: var(--img-front);
             background-position: 100% center;
         }
 
-        /* ── 뒷면 이미지 ── */
-        /*  패널1: 표지 (좌측 1/3) */
-        .panel-right > .panel-back {
+        /* ── 뒷면 이미지 매핑 (인쇄 템플릿 표준 순서로 방향 대폭 교정) ── */
+        /* 🔄 패널5: 뒷면 왼쪽 (템플릿 상의 맨 왼쪽 1/3 부분 매핑) */
+        .panel-left > .panel-back {
             background-image: var(--img-back);
             background-position: 0% center;
         }
-        /*  패널6: 뒷면 가운데 (중간 1/3) */
+        /* 패널6: 뒷면 가운데 (템플릿 상의 중간 1/3 부분 매핑) */
         .panel-center > .panel-back {
             background-image: var(--img-back);
             background-position: 50% center;
         }
-        /*  패널5: 뒷면 왼쪽 (우측 1/3) */
-        .panel-left > .panel-back {
+        /* 🔄 패널1: 표지 (템플릿 상의 맨 오른쪽 1/3 부분 매핑) */
+        .panel-right > .panel-back {
             background-image: var(--img-back);
             background-position: 100% center;
         }
@@ -239,7 +244,7 @@
             pointer-events: none;
         }
 
-        /* ── 패널 위치 ── */
+        /* ── 패널 위치 (고해상도 치수에 맞춰 재조정) ── */
         .panel-left {
             left: 0px;
             top: 0;
@@ -247,13 +252,13 @@
         }
 
         .panel-center {
-            left: 198px;
+            left: 330px;
             top: 0;
             transform-style: preserve-3d;
         }
 
         .panel-right {
-            left: 198px;
+            left: 330px;
             top: 0;
             transform-origin: left center;
         }
@@ -336,24 +341,22 @@
             line-height: 1.7;
         }
 
-        /* ── 반응형 ── */
-        @media (max-width: 800px) {
-            .scene { width: 540px; height: 430px; perspective: 1500px; }
-            .leaflet { width: 429px; height: 303px; }
-            .panel { width: 143px; height: 303px; }
-            .panel-center { left: 143px; }
-            .panel-right { left: 143px; }
-            .info-grid { grid-template-columns: 1fr; }
+        /* ── 📱 화면 크기에 맞춰 스케일 변수 조절 (레이아웃 수치 고정으로 흐려짐 완벽 방지) ── */
+        @media (max-width: 1200px) {
+            :root { --scene-scale: 0.75; }
+            .scene { width: 800px; height: 600px; }
         }
-
-        @media (max-width: 580px) {
-            .scene { width: 370px; height: 320px; perspective: 1200px; }
-            .leaflet { width: 297px; height: 210px; }
-            .panel { width: 99px; height: 210px; }
-            .panel-center { left: 99px; }
-            .panel-right { left: 99px; }
-            .button-group button { padding: 7px 13px; font-size: 11px; }
-            .controls h2 { font-size: 18px; }
+        @media (max-width: 900px) {
+            :root { --scene-scale: 0.55; }
+            .scene { width: 600px; height: 480px; }
+        }
+        @media (max-width: 650px) {
+            :root { --scene-scale: 0.42; }
+            .scene { width: 450px; height: 380px; }
+        }
+        @media (max-width: 480px) {
+            :root { --scene-scale: 0.32; }
+            .scene { width: 350px; height: 300px; }
         }
     </style>
 </head>
@@ -370,7 +373,7 @@
         <button id="btn-flip">🔄 뒤집기</button>
     </div>
     
-    <!-- 🔍 확대/축소 컨트롤러 추가 -->
+    <!-- 🔍 확대/축소 컨트롤러 -->
     <div class="zoom-control">
         <span>🔍 확대/축소 :</span>
         <input type="range" id="zoom-range" min="0.5" max="2" step="0.05" value="1">
@@ -431,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btnOpen   = document.getElementById('btn-open');
     var btnFlip   = document.getElementById('btn-flip');
 
-    // 확대/축소 엘리먼트
+    // 확대/축소 변수
     var zoomRange = document.getElementById('zoom-range');
     var zoomValue = document.getElementById('zoom-value');
 
@@ -440,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var startX, startY;
     var rotX = -8, rotY = -15;
     var curRotX = rotX, curRotY = rotY;
-    var zoomLevel = 1; // 기본 배율 (100%)
+    var zoomLevel = 1; // 기본 100%
 
     function setActive(btn) {
         [btnFolded, btnHalf, btnOpen, btnFlip].forEach(function(b) { b.classList.remove('active'); });
@@ -452,9 +455,11 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.classList.add(state);
     }
 
-    // 화면 변형 업데이트 (확대 배율 적용 포함)
+    // ⚡️ CSS 변수값만 업데이트하여 브라우저 리드로우를 최소화하고 부드러운 고화질 실시간 렌더링 유지
     function updateTransform() {
-        leaflet.style.transform = 'scale(' + zoomLevel + ') rotateX(' + curRotX + 'deg) rotateY(' + curRotY + 'deg)';
+        leaflet.style.setProperty('--rotX', curRotX);
+        leaflet.style.setProperty('--rotY', curRotY);
+        leaflet.style.setProperty('--zoom', zoomLevel);
     }
 
     btnFolded.addEventListener('click', function() { setState('folded'); setActive(btnFolded); });
@@ -470,21 +475,19 @@ document.addEventListener('DOMContentLoaded', function() {
         btnFlip.classList.toggle('active', isFlipped);
     });
 
-    // 🔍 슬라이더를 통한 확대/축소 제어
+    // 🔍 슬라이더 이벤트
     zoomRange.addEventListener('input', function(e) {
         zoomLevel = parseFloat(e.target.value);
         zoomValue.textContent = Math.round(zoomLevel * 100) + '%';
         updateTransform();
     });
 
-    // 🖱 마우스 휠을 통한 확대/축소 제어
+    // 🖱 마우스 휠 이벤트
     scene.addEventListener('wheel', function(e) {
-        e.preventDefault(); // 기본 스크롤 동작 방지
+        e.preventDefault();
         if (e.deltaY < 0) {
-            // 휠 위로: 확대 (최대 2배)
             zoomLevel = Math.min(2, zoomLevel + 0.05);
         } else {
-            // 휠 아래로: 축소 (최소 0.5배)
             zoomLevel = Math.max(0.5, zoomLevel - 0.05);
         }
         zoomRange.value = zoomLevel;
@@ -492,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTransform();
     }, { passive: false });
 
-    // 드래그 회전 이벤트 처리
+    // 3D 회전 마우스 드래그 이벤트
     scene.addEventListener('mousedown', function(e) {
         isDragging = true;
         startX = e.clientX; startY = e.clientY;
@@ -513,6 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     });
 
+    // 모바일 터치 이벤트
     scene.addEventListener('touchstart', function(e) {
         if (e.touches.length === 1) {
             isDragging = true;
