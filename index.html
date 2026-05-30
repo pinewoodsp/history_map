@@ -10,7 +10,8 @@
             
             /* 
                💎 [초고해상도 뼈대 설정] 
-               가운데 패널 너비(660px) * 3 = 전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
+               패널 한 칸의 물리 크기를 대폭 상향 (A4 가로 비율 완벽 일치)
+               전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
             */
             --panel-w: 660px;
             --panel-h: 1400px;
@@ -25,9 +26,9 @@
             --scene-scale: 0.45; 
 
             /* 
-               [깃허브 이미지 매치 공식]
-               - front.png : 등산객 표지가 있는 겉면 이미지
-               - back.png  : 01, 02, 03이 적혀있는 안쪽면 상세 이미지
+               [깃허브 이미지 파일 매칭 설정]
+               - front.png : 등산객 표지, 코스안내, 용양봉저정 지도가 그려진 겉면 이미지
+               - back.png  : 01, 02, 03 숫자가 그려진 안쪽면 상세 이미지
             */
             --img-front: url('./front.png');
             --img-back: url('./back.png');
@@ -201,35 +202,35 @@
             image-rendering: auto;
         }
 
-        /* ── 앞면 이미지 매핑 (안쪽면 back.png: 01, 02, 03 순서로 정방향 정렬) ── */
-        /*  패널4: 화면 왼쪽 패널 -> 이미지의 우측 1/3인 [01 용양봉저정]을 보여줌 */
+        /* ── 📰 앞면 매핑 (안쪽 상세면 back.png: 정면에서 봤을 때 01 ➡️ 02 ➡️ 03 순서 정렬) ── */
+        /* 패널4: 화면 왼쪽 패널 -> back.png의 맨 우측인 [01 용양봉저정 100%] 매핑 */
         .panel-left > .panel-front {
             background-image: var(--img-back);
             background-position: 100% center;
         }
-        /*  패널3: 화면 가운데 패널 -> 이미지의 중간 1/3인 [02 사육신 역사공원]을 보여줌 */
+        /* 패널3: 화면 가운데 패널 -> back.png의 중간인 [02 사육신 역사공원 50%] 매핑 */
         .panel-center > .panel-front {
             background-image: var(--img-back);
             background-position: 50% center;
         }
-        /*  패널2: 화면 오른쪽 패널 -> 이미지의 좌측 1/3인 [03 국립서울 현충원]을 보여줌 */
+        /* 패널2: 화면 오른쪽 패널 -> back.png의 맨 좌측인 [03 국립서울 현충원 0%] 매핑 */
         .panel-right > .panel-front {
             background-image: var(--img-back);
             background-position: 0% center;
         }
 
-        /* ── 뒷면 이미지 매핑 (겉면 front.png: 표지, 지도, 추천코스) ── */
-        /* 패널5: 겉면 왼쪽 (안쪽 날개 - 추천 코스) */
+        /* ── 🗺️ 뒷면 매핑 (겉면 front.png: 뒤집었을 때 화면 왼쪽부터 표지 ➡️ 코스안내 ➡️ 용양봉저정 지도 정렬) ── */
+        /* 🔄 패널5: 뒷면 왼쪽 패널 (뒤집으면 우측에 배치되므로 이미지 우측인 [용양봉저정 공원 지도 0%] 매핑) */
         .panel-left > .panel-back {
             background-image: var(--img-front);
             background-position: 0% center;
         }
-        /* 패널6: 겉면 가운데 (뒷 표지 - 지도 안내) */
+        /* 패널6: 뒷면 가운데 패널 (이미지 중간인 [코스 안내 50%] 매핑) */
         .panel-center > .panel-back {
             background-image: var(--img-front);
             background-position: 50% center;
         }
-        /* 패널1: 표지 (접었을 때 맨 앞으로 오는 메인 등산객 표지) */
+        /* 🔄 패널1: 뒷면 오른쪽 패널 (뒤집으면 좌측에 배치되므로 이미지 맨 우측인 [동작구 역사 탐방 표지 100%] 매핑!) */
         .panel-right > .panel-back {
             background-image: var(--img-front);
             background-position: 100% center;
@@ -286,9 +287,9 @@
         }
 
         /* ── 접기 애니메이션 ── */
-        /* 🎯 [표지 전면 배치 핵심] 오른쪽 표지 패널이 왼쪽 날개 위를 부드럽게 덮으며 가장 앞으로 오도록 Z축 값 정밀 설계 */
-        .leaflet.folded .panel-left  { transform: rotateY(176deg) translateZ(0.5px); }
-        .leaflet.folded .panel-right { transform: rotateY(-179deg) translateZ(2px); }
+        /* 🎯 [표지 전면 배치 교정] 오른쪽 표지 패널이 왼쪽 날개 위를 부드럽게 덮으며 가장 앞(translateZ 2px)에 오도록 세팅 */
+        .leaflet.folded .panel-left  { transform: rotateY(180deg) translateZ(0.5px); }
+        .leaflet.folded .panel-right { transform: rotateY(-180deg) translateZ(2px); }
         
         .leaflet.half   .panel-left  { transform: rotateY(90deg) translateZ(0px); }
         .leaflet.half   .panel-right { transform: rotateY(-90deg) translateZ(0px); }
