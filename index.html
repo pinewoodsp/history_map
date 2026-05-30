@@ -143,7 +143,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative; /* 자식 absolute 배치를 위해 기준 설정 */
+            position: relative;
         }
 
         .scene:active { cursor: grabbing; }
@@ -152,13 +152,13 @@
             width: 1980px; /* 초고화질 패널 3개 너비 합 (660px * 3) */
             height: var(--panel-h);
             
-            /* 🎯 [정중앙 절대 고정 공식] */
+            /* 🎯 [정중앙 절대 고정] */
             position: absolute;
             left: 50%;
             top: 50%;
-            margin-left: -990px; /* 정확한 중앙 매칭을 위해 너비의 절반만큼 이동 */
-            margin-top: -700px;  /* 정확한 중앙 매칭을 위해 높이의 절반만큼 이동 */
-            transform-origin: center center; /* 회전 기준축을 물리적 중심에 완벽 고정 */
+            margin-left: -990px;
+            margin-top: -700px;
+            transform-origin: center center;
 
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -168,7 +168,7 @@
             --rotY: -15;
             --zoom: 1;
 
-            /* 🔄 [회전축 어긋남 해결] rotateY를 rotateX보다 앞에 두어 글로벌 수직축을 기준으로 깔끔하게 회전하게 함 */
+            /* 🔄 rotateY를 앞에 배치하여 부드러운 수평 회전축 유지 */
             transform: scale(calc(var(--scene-scale) * var(--zoom))) rotateY(calc(var(--rotY) * 1deg)) rotateX(calc(var(--rotX) * 1deg));
         }
 
@@ -185,43 +185,47 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            -webkit-backface-visibility: hidden; /* 사파리 깨짐 방지 */
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             background-size: 300% 100%;
             background-repeat: no-repeat;
             overflow: hidden;
 
-            /* ✨ 하드웨어 GPU 가속 유도로 3D 회전 시 뭉개짐(블러) 완벽 차단 */
+            /* ✨ 하드웨어 GPU 가속 유도로 흐려짐 방지 */
             transform: translateZ(0.1px); 
             will-change: transform;
-            
-            /* 이미지를 뭉개지 않고 부드럽고 섬세하게 렌더링 */
             image-rendering: auto;
         }
 
-        /* ── 앞면 이미지 매핑 ── */
+        /* ── 앞면 이미지 매핑 (순서 교정: 01, 02, 03 순서로 정방향 정렬) ── */
+        /*  패널4: 화면 왼쪽 패널 -> 이미지의 우측 1/3인 [01 용양봉저정]을 보여줌 */
         .panel-left > .panel-front {
             background-image: var(--img-front);
-            background-position: 0% center;
+            background-position: 100% center;
         }
+        /*  패널3: 화면 가운데 패널 -> 이미지의 중간 1/3인 [02 사육신 역사공원]을 보여줌 */
         .panel-center > .panel-front {
             background-image: var(--img-front);
             background-position: 50% center;
         }
+        /*  패널2: 화면 오른쪽 패널 -> 이미지의 좌측 1/3인 [03 국립서울 현충원]을 보여줌 */
         .panel-right > .panel-front {
             background-image: var(--img-front);
-            background-position: 100% center;
+            background-position: 0% center;
         }
 
         /* ── 뒷면 이미지 매핑 (인쇄용 표준 템플릿 방향 완벽 매칭) ── */
+        /* 패널5: 뒷면 왼쪽 (템플릿 상의 맨 왼쪽 1/3 부분 매핑) */
         .panel-left > .panel-back {
             background-image: var(--img-back);
             background-position: 0% center;
         }
+        /* 패널6: 뒷면 가운데 (템플릿 상의 중간 1/3 부분 매핑) */
         .panel-center > .panel-back {
             background-image: var(--img-back);
             background-position: 50% center;
         }
+        /* 패널1: 표지 (템플릿 상의 맨 오른쪽 1/3 부분 매핑) */
         .panel-right > .panel-back {
             background-image: var(--img-back);
             background-position: 100% center;
@@ -429,9 +433,9 @@
     <h3>📋 면 구성 안내</h3>
     <div class="info-grid">
         <div class="info-item"><span class="num">1</span><span>표지 — 동작구 역사 탐방 (접었을 때 맨 앞)</span></div>
-        <div class="info-item"><span class="num">2</span><span>앞면 오른쪽 — 국립서울 현충원</span></div>
-        <div class="info-item"><span class="num">3</span><span>앞면 가운데 — 사육신 역사공원</span></div>
-        <div class="info-item"><span class="num">4</span><span>앞면 왼쪽 — 용양봉저정</span></div>
+        <div class="info-item"><span class="num">2</span><span>앞면 왼쪽 — 01 용양봉저정</span></div>
+        <div class="info-item"><span class="num">3</span><span>앞면 가운데 — 02 사육신 역사공원</span></div>
+        <div class="info-item"><span class="num">4</span><span>앞면 오른쪽 — 03 국립서울 현충원</span></div>
         <div class="info-item"><span class="num">5</span><span>뒷면 왼쪽 — 추천 탐방 코스</span></div>
         <div class="info-item"><span class="num">6</span><span>뒷면 가운데 — 지도 안내</span></div>
     </div>
@@ -471,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.classList.add(state);
     }
 
-    // CSS 변수값만 부드럽게 실시간 갱신
+    // CSS 변수값 실시간 갱신
     function updateTransform() {
         leaflet.style.setProperty('--rotX', curRotX);
         leaflet.style.setProperty('--rotY', curRotY);
