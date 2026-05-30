@@ -7,11 +7,9 @@
     <style>
         :root {
             --bg: #d6cfc4;
+            --container-bg: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.18) 0%, transparent 70%);
             
-            /* 
-               💎 [초고해상도 뼈대 설정] 
-               가운데 패널 너비(660px) * 3 = 전체 너비 1980px, height 1400px의 초고화질 도화지 생성
-            */
+            /* 💎 [초고해상도 뼈대 설정] */
             --panel-w: 660px;
             --panel-h: 1400px;
             
@@ -21,17 +19,27 @@
             --btn-active-bg: #7a5230;
             --fold-line: rgba(0,0,0,0.18);
             
-            /* 📱 모니터 크기에 맞춰 화면에 알맞게 줄여서(Scale-Down) 보여주기 위한 기본 배율 */
+            /* 📱 모니터 크기 조절용 기본 배율 */
             --scene-scale: 0.45; 
 
-            /* 
-               [깃허브 이미지 및 음악 연결 설정]
-               - front.png : 등산객 표지, 코스안내, 용양봉저정 지도가 그려진 겉면 이미지
-               - back.png  : 01, 02, 03 숫자가 그려진 안쪽면 상세 이미지
-               - music.mp3 : 깃허브에 음악 파일을 업로드할 때 파일명을 music.mp3로 올리면 자동 연동됩니다.
-            */
             --img-front: url('./front.png');
             --img-back: url('./back.png');
+            
+            /* 야간 테마를 위한 색상 변수 정의 */
+            --board-bg: #fdf5ea;
+            --card-bg: #fff8f0;
+            --card-border: #e8d5b4;
+            --text-color: #4a3320;
+        }
+
+        /* 🌙 [야간 탐방 모드] 활성화 시 바뀔 밤하늘 CSS 변수 테마 */
+        body.dark-theme {
+            --bg: #141722;
+            --container-bg: radial-gradient(ellipse at 50% 30%, rgba(100, 110, 150, 0.25) 0%, transparent 80%);
+            --board-bg: #1e2230;
+            --card-bg: #262c3e;
+            --card-border: #3d4760;
+            --text-color: #ecd9c6;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -44,6 +52,7 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background 0.8s ease;
         }
 
         /* ── 컨트롤 영역 ── */
@@ -160,7 +169,8 @@
             padding: 40px 20px;
             min-height: 720px;
             background: var(--bg);
-            background-image: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.18) 0%, transparent 70%);
+            background-image: var(--container-bg);
+            transition: background-image 0.8s ease;
         }
 
         .scene {
@@ -177,10 +187,8 @@
         .scene:active { cursor: grabbing; }
 
         .leaflet {
-            width: 1980px; /* 초고화질 패널 3개 너비 합 (660px * 3) */
+            width: 1980px;
             height: var(--panel-h);
-            
-            /* 🎯 [정중앙 절대 고정] */
             position: absolute;
             left: 50%;
             top: 50%;
@@ -188,7 +196,6 @@
             margin-top: -700px;
             transform-origin: center center;
             transform-style: preserve-3d;
-            
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
@@ -210,8 +217,6 @@
             background-size: 300% 100%;
             background-repeat: no-repeat;
             overflow: hidden;
-
-            /* ✨ 하드웨어 GPU 가속 유도로 흐려짐 방지 */
             transform: translateZ(0.1px); 
             will-change: transform;
             image-rendering: auto;
@@ -255,7 +260,7 @@
             transform: rotateY(180deg) translateZ(0.1px);
         }
 
-        /* ── 접선 (점선) ── */
+        /* ── 접선 ── */
         .panel-left > .panel-front::after,
         .panel-left > .panel-back::after {
             content: '';
@@ -305,21 +310,22 @@
         .leaflet.open   .panel-left  { transform: rotateY(0deg) translateZ(0px); }
         .leaflet.open   .panel-right { transform: rotateY(0deg) translateZ(0px); }
 
-        /* ── 🗺️ 실제 지도 찾기 보드 스타일 (리플렛 텍스트를 절대 가리지 않는 구조) ── */
+        /* ── 🗺️ 실제 지도 찾기 보드 ── */
         .map-board {
             max-width: 700px;
             margin: 0 auto 50px;
             padding: 20px;
-            background: #fdf5ea;
+            background: var(--board-bg);
             border-radius: 12px;
-            border: 1px solid #d4bc9a;
+            border: 1px solid var(--card-border);
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             text-align: center;
+            transition: all 0.5s ease;
         }
 
         .map-board h3 {
             font-size: 15px;
-            color: #4a3320;
+            color: var(--text-color);
             margin-bottom: 12px;
             font-weight: 700;
         }
@@ -337,14 +343,15 @@
             justify-content: center;
             gap: 6px;
             padding: 12px 10px;
-            background: #fff8f0;
-            border: 1.5px solid #e8d5b4;
+            background: var(--card-bg);
+            border: 1.5px solid var(--card-border);
             border-radius: 8px;
             text-decoration: none;
-            color: #4a3320;
+            color: var(--text-color);
             font-weight: 600;
             font-size: 12px;
             transition: all 0.25s ease;
+            position: relative;
         }
 
         .map-card-link:hover {
@@ -359,7 +366,129 @@
             font-size: 16px;
         }
 
-        /* ── 📱 반응형 화면 맞춤 스케일 제어 ── */
+        /* 💮 스탬프 투어용 스탬프 도장 디자인 */
+        .stamp-mark {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 32px;
+            height: 32px;
+            background: #d32f2f;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 8px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0) rotate(-30deg);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1.5px double #ffcdd2;
+            pointer-events: none;
+        }
+
+        .map-card-link.completed .stamp-mark {
+            transform: scale(1) rotate(-15deg);
+            opacity: 1;
+        }
+
+        /* 🎉 가상 완주 인증서 팝업창 모달 */
+        .cert-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .cert-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cert-content {
+            background: #fdfaf2;
+            border: 15px double #a88254;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+            transform: scale(0.7);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cert-modal.active .cert-content {
+            transform: scale(1);
+        }
+
+        .cert-title {
+            font-family: 'Georgia', serif;
+            font-size: 26px;
+            color: #4a3018;
+            margin-bottom: 20px;
+            font-weight: 800;
+            border-bottom: 2px solid #a88254;
+            padding-bottom: 10px;
+        }
+
+        .cert-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #5c4028;
+            margin-bottom: 30px;
+        }
+
+        .cert-stamp {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #d32f2f;
+            border-radius: 50%;
+            color: #d32f2f;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 16px;
+            transform: rotate(-10deg);
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        .btn-close-cert {
+            background: #a88254;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-close-cert:hover {
+            background: #7a5d3b;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) rotate(-10deg); }
+            50% { transform: scale(1.05) rotate(-10deg); }
+            100% { transform: scale(1) rotate(-10deg); }
+        }
+
+        /* ── 📱 반응형 ── */
         @media (max-width: 1200px) {
             :root { --scene-scale: 0.36; }
             .scene { width: 800px; height: 560px; }
@@ -381,7 +510,7 @@
 </head>
 <body>
 
-<!-- 🎵 배경음악 재생 태그 (내 깃허브에 music.mp3라는 파일명으로 올린 경우 연동됨) -->
+<!-- 🎵 배경음악 재생 태그 -->
 <audio id="bgm" loop>
     <source src="./music.mp3" type="audio/mpeg">
 </audio>
@@ -391,12 +520,13 @@
     <p>3D 3단 리플렛 · 마우스로 돌려보세요</p>
     <div class="size-info">A4 용지 (297mm × 210mm) 기준 · 각 면 99mm × 210mm</div>
     
-    <!-- 첫 번째 버튼 그룹: 3D 컨트롤러 및 음악 -->
+    <!-- 첫 번째 버튼 그룹: 3D 컨트롤러 및 야간모드, 음악 -->
     <div class="button-group">
         <button id="btn-folded" class="active">📕 접힌 상태</button>
         <button id="btn-half">📖 반쯤 펼침</button>
         <button id="btn-open">📰 완전히 펼침</button>
         <button id="btn-flip">🔄 뒤집기</button>
+        <button id="btn-night" title="은은한 야간 탐방 감성으로 전환">🌙 야간 탐방 모드</button>
         <button id="btn-music" aria-label="배경 음악 켜고 끄기">🎵 배경 음악 재생 (단축키 M)</button>
     </div>
 
@@ -413,7 +543,7 @@
         <span id="zoom-value">100%</span>
     </div>
 
-    <div class="drag-hint">⌨️ 키보드 자판의 [ M ] 을 누르면 업로드한 음악을 편하게 켜고 끌 수 있습니다.</div>
+    <div class="drag-hint">⌨️ 키보드 자판의 [ M ] 을 누르면 음악 재생 온오프가 가능합니다.</div>
 </div>
 
 <div class="scene-container">
@@ -442,20 +572,46 @@
     </div>
 </div>
 
-<!-- 🗺️ 역사지 길찾기 바로가기 보드 (리플렛 텍스트 가림 방지) -->
+<!-- 🗺️ 역사지 길찾기 및 스탬프 투어 보드 -->
 <div class="map-board">
-    <h3>📍 동작구 역사지 실제 위치 길찾기 (카카오맵 연동)</h3>
+    <h3>📍 동작구 역사지 실제 위치 길찾기 (방문 스탬프 투어 💮)</h3>
+    <p style="font-size: 11px; color: #a08060; margin-bottom: 15px;">각 명소 길찾기를 클릭하여 3개의 스탬프를 모두 찍어 완주 증서를 획득해 보세요!</p>
     <div class="map-links-grid">
-        <a href="https://map.kakao.com/?q=%EC%9A%A9%EC%96%91%EB%B4%89%EC%A0%80%EC%A0%95" target="_blank" class="map-card-link">
+        <a href="https://map.kakao.com/?q=%EC%9A%A9%EC%96%91%EB%B4%89%EC%A0%80%EC%A0%95" target="_blank" class="map-card-link" id="stamp-yong" data-spot="yong">
             <span>🗺️</span> 01 용양봉저정 길찾기
+            <div class="stamp-mark">💮<br>스탬프</div>
         </a>
-        <a href="https://map.kakao.com/?q=%EC%82%AC%EC%9C%A1%EC%8B%A0%EC%97%AD%EC%82%AC%EA%B3%B5%EC%9B%90" target="_blank" class="map-card-link">
+        <a href="https://map.kakao.com/?q=%EC%82%AC%EC%9C%A1%EC%8B%A0%EC%97%AD%EC%82%AC%EA%B3%B5%EC%9B%90" target="_blank" class="map-card-link" id="stamp-sayuk" data-spot="sayuk">
             <span>🗺️</span> 02 사육신 역사공원 길찾기
+            <div class="stamp-mark">💮<br>스탬프</div>
         </a>
-        <a href="https://map.kakao.com/?q=%EA%B5%AD%EB%A6%BD%EC%84%9C%EC%9A%B8%ED%98%84%EC%B6%A9%EC%9B%90" target="_blank" class="map-card-link">
+        <a href="https://map.kakao.com/?q=%EA%B5%AD%EB%A6%BD%EC%84%9C%EC%9A%B8%ED%98%84%EC%B6%A9%EC%9B%90" target="_blank" class="map-card-link" id="stamp-hyun" data-spot="hyun">
             <span>🗺️</span> 03 국립서울 현충원 길찾기
+            <div class="stamp-mark">💮<br>스탬프</div>
         </a>
     </div>
+</div>
+
+<!-- 🎉 가상 완주 인증서 모달 팝업창 -->
+<div class="cert-modal" id="cert-modal">
+    <div class="cert-content">
+        <div class="cert-title">완 주 인 증 서</div>
+        <div class="cert-body">
+            <p style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">동작구 역사 탐방 완주자</p>
+            귀하는 동작구 3대 역사 명소인<br>
+            <strong>용양봉저정, 사육신 역사공원, 국립서울 현충원</strong>의<br>
+            상세 지도 정보 탐색을 성실히 완수하였기에<br>
+            이 가상 완주 인증서를 수여합니다.
+        </div>
+        <div class="cert-stamp">동작구역사<br>완주인증</div>
+        <br>
+        <button class="btn-close-cert" id="btn-close-cert">확인</button>
+    </div>
+</div>
+
+<div class="a4-note" style="max-width: 700px; margin: 0 auto 50px; text-align: center;">
+    📐 <strong>A4 용지 기준 실제 크기</strong><br>
+    전체 펼침: 297mm × 210mm (가로형) · 각 면: 99mm × 210mm · 접었을 때: 99mm × 210mm
 </div>
 
 <script>
@@ -466,13 +622,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var btnHalf   = document.getElementById('btn-half');
     var btnOpen   = document.getElementById('btn-open');
     var btnFlip   = document.getElementById('btn-flip');
+    var btnNight  = document.getElementById('btn-night');
 
     // BGM 연동 변수
     var bgm = document.getElementById('bgm');
     var btnMusic = document.getElementById('btn-music');
     var isPlayingMusic = false;
 
-    // 🔊 [요청사항 반영] 배경음악 기본 볼륨을 귀에 부담이 없는 50%로 고정 설정
+    // 배경음악 볼륨 50%로 고정
     bgm.volume = 0.5;
 
     // 확대/축소 변수
@@ -514,6 +671,15 @@ document.addEventListener('DOMContentLoaded', function() {
         curRotX = rotX; curRotY = rotY;
         updateTransform();
         btnFlip.classList.toggle('active', isFlipped);
+    });
+
+    // 🌙 [야간 탐방 모드] 토글 로직
+    var isDark = false;
+    btnNight.addEventListener('click', function() {
+        isDark = !isDark;
+        document.body.classList.toggle('dark-theme', isDark);
+        btnNight.classList.toggle('active', isDark);
+        btnNight.textContent = isDark ? "☀️ 주간 탐방 모드" : "🌙 야간 탐방 모드";
     });
 
     // 🔍 슬라이더 이벤트
@@ -563,6 +729,64 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             toggleMusic();
         }
+    });
+
+    // 💮 [가상 스탬프 투어 및 완주 팝업 로직]
+    var stampStatus = {
+        yong: false,
+        sayuk: false,
+        hyun: false
+    };
+
+    var certModal = document.getElementById('cert-modal');
+    var btnCloseCert = document.getElementById('btn-close-cert');
+
+    // 로컬 스토리지에서 이전 스탬프 정보가 있다면 복원
+    var savedStamps = localStorage.getItem('dongjak_history_stamps');
+    if (savedStamps) {
+        stampStatus = JSON.parse(savedStamps);
+        Object.keys(stampStatus).forEach(function(key) {
+            if (stampStatus[key]) {
+                var el = document.querySelector('[data-spot="' + key + '"]');
+                if (el) el.classList.add('completed');
+            }
+        });
+    }
+
+    // 명소 길찾기 링크 클릭 시 도장 쾅!
+    var mapLinks = document.querySelectorAll('.map-card-link');
+    mapLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            var spot = this.getAttribute('data-spot');
+            if (!stampStatus[spot]) {
+                stampStatus[spot] = true;
+                this.classList.add('completed');
+                // 로컬 스토리지에 진행 상태 임시 저장
+                localStorage.setItem('dongjak_history_stamps', JSON.stringify(stampStatus));
+                
+                // 3개 명소 스탬프 획득 여부 실시간 확인
+                checkStampCompletion();
+            }
+        });
+    });
+
+    // 3개 스탬프 모두 완수했는지 확인하는 함수
+    function checkStampCompletion() {
+        if (stampStatus.yong && stampStatus.sayuk && stampStatus.hyun) {
+            // 이미 팝업을 본 적이 있는지 체크 (무한 반복 방지)
+            var hasSeenCert = sessionStorage.getItem('seen_dongjak_cert');
+            if (!hasSeenCert) {
+                setTimeout(function() {
+                    certModal.classList.add('active');
+                    sessionStorage.setItem('seen_dongjak_cert', 'true');
+                }, 1000); // 길찾기 페이지로 가기 전 1초간 살짝 딜레이 후 띄움
+            }
+        }
+    }
+
+    // 팝업 닫기 버튼
+    btnCloseCert.addEventListener('click', function() {
+        certModal.classList.remove('active');
     });
 
     // 3D 회전 마우스 드래그 이벤트
