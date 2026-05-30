@@ -10,7 +10,8 @@
             
             /* 
                💎 [초고해상도 뼈대 설정] 
-               가운데 패널 너비(660px) * 3 = 전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
+               패널 한 칸의 물리 크기를 대폭 상향 (A4 가로 비율 완벽 일치)
+               전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
             */
             --panel-w: 660px;
             --panel-h: 1400px;
@@ -104,21 +105,31 @@
             color: #fff8ec;
         }
 
-        /* 🔍 확대/축소 컨트롤러 */
+        /* 🔍 확대/축소 및 웹 접근성 컨트롤러 */
         .zoom-control {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 20px;
             color: #e8d5b0;
             font-size: 13px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .zoom-control input[type="range"] {
             width: 160px;
             cursor: pointer;
             accent-color: var(--btn-border);
+        }
+
+        .accessibility-badge {
+            background: #5a7a3a;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         .drag-hint {
@@ -165,7 +176,6 @@
             transform-origin: center center;
             transform-style: preserve-3d;
             
-            /* 브라우저 호환성을 위해 JS에서 style.transform으로 직접 제어 */
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
@@ -194,35 +204,60 @@
             image-rendering: auto;
         }
 
+        /* 🎯 [3번 지도 연동 스타일] 리플렛 내부에 삽입할 입체 링크 버튼 */
+        .map-btn {
+            position: absolute;
+            bottom: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(43, 33, 24, 0.92);
+            color: #e8d5b0;
+            border: 2px solid var(--btn-border);
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .map-btn:hover {
+            background: var(--btn-active-bg);
+            color: #fff;
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
         /* ── 📰 안쪽 상세면 매핑 (내지 back.png: 정면에서 펼쳐 봤을 때 01 ➡️ 02 ➡️ 03 순서 정렬) ── */
-        /* 패널 왼쪽: back.png의 맨 좌측인 [01 용양봉저정 0%] 매핑 */
         .panel-left > .panel-front {
             background-image: var(--img-back);
             background-position: 0% center;
         }
-        /* 패널 가운데: back.png의 중간인 [02 사육신 역사공원 50%] 매핑 */
         .panel-center > .panel-front {
             background-image: var(--img-back);
             background-position: 50% center;
         }
-        /* 패널 오른쪽: back.png의 맨 우측인 [03 국립서울 현충원 100%] 매핑 */
         .panel-right > .panel-front {
             background-image: var(--img-back);
             background-position: 100% center;
         }
 
-        /* ── 🗺️ 겉면 매핑 (표지 및 지도 front.png: 뒤집었을 때 화면 왼쪽부터 표지 ➡️ 코스안내 ➡️ 용양봉저정 지도 정렬) ── */
-        /* 🔄 패널 왼쪽의 뒷면: 뒤집었을 때 화면 우측에 위치하므로 front.png의 우측 [용양봉저정 공원 지도 100%] 매핑! */
+        /* ── 🗺️ 겉면 매핑 (표지 및 지도 front.png) ── */
         .panel-left > .panel-back {
             background-image: var(--img-front);
             background-position: 100% center;
         }
-        /* 패널 가운데의 뒷면: front.png의 중간 [코스 안내 50%] 매핑 */
         .panel-center > .panel-back {
             background-image: var(--img-front);
             background-position: 50% center;
         }
-        /* 🔄 패널 오른쪽의 뒷면: 뒤집었을 때 화면 좌측에 위치하므로 front.png의 맨 좌측 [동작구 역사 탐방 표지 0%] 매핑! */
         .panel-right > .panel-back {
             background-image: var(--img-front);
             background-position: 0% center;
@@ -279,7 +314,6 @@
         }
 
         /* ── 접기 애니메이션 ── */
-        /* 🎯 [표지 전면 배치 교정] 오른쪽 표지 패널(panel-right)이 왼쪽 날개(panel-left)보다 시각적으로 완전히 위를 덮도록 translateZ의 마이너스 축(가까워지는 방향) 값을 고정 */
         .leaflet.folded .panel-left  { transform: rotateY(180deg) translateZ(-1px); }
         .leaflet.folded .panel-right { transform: rotateY(-180deg) translateZ(-3px); }
         
@@ -382,6 +416,11 @@
 </head>
 <body>
 
+<!-- 🎵 배경음악 재생 태그 (부드러운 연주곡 CDN 주소 연동) -->
+<audio id="bgm" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+</audio>
+
 <div class="controls">
     <h2>동작구 역사 탐방 · 리플렛 미리보기</h2>
     <p>3D 3단 리플렛 · 마우스로 돌려보세요</p>
@@ -393,34 +432,56 @@
         <button id="btn-flip">🔄 뒤집기</button>
     </div>
     
-    <!-- 🔍 확대/축소 슬라이더 -->
+    <div class="button-group">
+        <!-- 🎧 오디오 가이드 & 배경음악 버튼 추가 -->
+        <button id="btn-tts" aria-label="오디오 가이드 켜고 끄기">🎧 오디오 가이드 (단축키 S)</button>
+        <button id="btn-music" aria-label="배경 음악 켜고 끄기">🎵 배경 음악 (단축키 M)</button>
+    </div>
+    
+    <!-- 🔍 확대/축소 슬라이더 및 시각장애인 접근성 안내 배지 -->
     <div class="zoom-control">
         <span>🔍 확대/축소 :</span>
-        <input type="range" id="zoom-range" min="0.5" max="2.5" step="0.05" value="1">
+        <input type="range" id="zoom-range" min="0.5" max="2.5" step="0.05" value="1" aria-label="리플렛 크기 조절 슬라이더">
         <span id="zoom-value">100%</span>
+        <span class="accessibility-badge" role="status">♿ 웹 접근성 지원</span>
     </div>
 
-    <div class="drag-hint">🖱 드래그로 회전 · 휠/슬라이더로 확대/축소 · 버튼으로 접기/펼치기</div>
+    <div class="drag-hint">⌨️ 키보드 자판의 [ S ] 를 누르면 오디오 가이드가, [ M ] 을 누르면 국악 음악이 켜집니다.</div>
 </div>
 
 <div class="scene-container">
     <div class="scene" id="scene">
-        <div class="leaflet folded" id="leaflet">
+        <div class="leaflet folded" id="leaflet" tabindex="0" aria-label="3D 리플렛 본체">
 
             <!-- 왼쪽 패널 -->
             <div class="panel panel-left">
-                <div class="panel-face panel-front"></div>
-                <div class="panel-face panel-back"></div>
+                <!-- 안쪽 상세면 [01 용양봉저정] -->
+                <div class="panel-face panel-front">
+                    <!-- 🗺️ 3번 지도 연동 버튼 삽입 -->
+                    <a href="https://map.kakao.com/?q=%EC%9A%A9%EC%96%91%EB%B4%89%EC%A0%80%EC%A0%95" target="_blank" class="map-btn" tabindex="0">🗺️ 실시간 지도 찾기 ↗</a>
+                </div>
+                <!-- 겉면 [용양봉저정 공원 지도] -->
+                <div class="panel-face panel-back">
+                    <a href="https://map.kakao.com/?q=%EC%9A%A9%EC%96%91%EB%B4%89%EC%A0%80%EC%A0%95%EA%B3%B5%EC%9B%90" target="_blank" class="map-btn" tabindex="0">🗺️ 공원 위치 보기 ↗</a>
+                </div>
             </div>
 
             <!-- 가운데 패널 -->
             <div class="panel panel-center">
-                <div class="panel-face panel-front"></div>
+                <!-- 안쪽 상세면 [02 사육신 역사공원] -->
+                <div class="panel-face panel-front">
+                    <a href="https://map.kakao.com/?q=%EC%82%AC%EC%9C%A1%EC%8B%A0%EC%97%AD%EC%82%AC%EA%B3%B5%EC%9B%90" target="_blank" class="map-btn" tabindex="0">🗺️ 실시간 지도 찾기 ↗</a>
+                </div>
+                <!-- 겉면 [코스 안내] -->
                 <div class="panel-face panel-back"></div>
 
                 <!-- 오른쪽 패널(가운데 안에 중첩) -->
                 <div class="panel panel-right">
-                    <div class="panel-face panel-front"></div>
+                    <!-- 안쪽 상세면 [03 국립서울 현충원] -->
+                    <div class="panel-face panel-front">
+                        <a href="https://map.kakao.com/?q=%EA%B5%AD%EB%A6%BD%EC%84%9C%EC%9A%B8%ED%98%84%EC%B6%A9%EC%9B%90" target="_blank" class="map-btn" tabindex="0">🗺️ 실시간 지도 찾기 ↗</a>
+                    </div>
+                    <!-- 겉면 [동작구 역사 탐방 표지] -->
                     <div class="panel-face panel-back"></div>
                 </div>
             </div>
@@ -454,6 +515,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var btnOpen   = document.getElementById('btn-open');
     var btnFlip   = document.getElementById('btn-flip');
 
+    // 오디오 가이드 & BGM 연동 변수
+    var bgm = document.getElementById('bgm');
+    var btnTTS = document.getElementById('btn-tts');
+    var btnMusic = document.getElementById('btn-music');
+    var isPlayingMusic = false;
+    var isReadingTTS = false;
+    var synth = window.speechSynthesis;
+    var utterance = null;
+
     // 확대/축소 변수
     var zoomRange = document.getElementById('zoom-range');
     var zoomValue = document.getElementById('zoom-value');
@@ -465,22 +535,28 @@ document.addEventListener('DOMContentLoaded', function() {
     var curRotX = rotX, curRotY = rotY;
     var zoomLevel = 1; // 기본 100%
 
+    // 리플렛 상태 정보 저장용 변수
+    var brochureState = "folded"; // "folded", "half", "open"
+
     function setActive(btn) {
         [btnFolded, btnHalf, btnOpen, btnFlip].forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
     }
 
     function setState(state) {
+        brochureState = state;
         leaflet.classList.remove('folded','half','open');
         leaflet.classList.add(state);
+        // 만약 소리가 켜져 있다면 상태가 변했을 때 즉시 새 목소리로 브리핑
+        if (isReadingTTS) {
+            playBrochureTTS();
+        }
     }
 
-    // ⚡️ [최적화] 브라우저 호환성을 완벽하게 맞춘 JS 기반 3D Transform 문자열 빌딩 연산
     function updateTransform() {
         leaflet.style.transform = 'scale(calc(var(--scene-scale) * ' + zoomLevel + ')) rotateY(' + curRotY + 'deg) rotateX(' + curRotX + 'deg)';
     }
 
-    // 초기 렌더링 세팅
     updateTransform();
 
     btnFolded.addEventListener('click', function() { setState('folded'); setActive(btnFolded); });
@@ -494,6 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
         curRotX = rotX; curRotY = rotY;
         updateTransform();
         btnFlip.classList.toggle('active', isFlipped);
+        if (isReadingTTS) playBrochureTTS();
     });
 
     // 🔍 슬라이더 이벤트
@@ -515,6 +592,92 @@ document.addEventListener('DOMContentLoaded', function() {
         zoomValue.textContent = Math.round(zoomLevel * 100) + '%';
         updateTransform();
     }, { passive: false });
+
+    // 🎧 [1번 오디오 가이드 TTS 재생 핵심 로직]
+    function playBrochureTTS() {
+        synth.cancel(); // 이전에 읽던 소리가 있으면 완전히 중단
+        
+        var textToRead = "";
+        
+        // 3D 상태에 따른 맞춤형 화면 낭독 대사 지정
+        if (brochureState === "folded") {
+            textToRead = "접혀있는 동작구 역사 탐방 리플렛 표지입니다. 배낭을 멘 등산객이 한가운데 그려져 있습니다. 단축키 탭 키를 사용하여 실제 지도 길찾기 버튼으로 갈 수 있습니다.";
+        } else if (brochureState === "half" || brochureState === "open") {
+            if (isFlipped) {
+                textToRead = "리플렛 겉면입니다. 동작구 역사 탐방 코스 지도와 추천 탐방 코스가 나타나 있습니다. 노들역, 사육신 역사공원, 용양봉저정 순으로 이어집니다.";
+            } else {
+                textToRead = "리플렛 안쪽 상세 페이지입니다. 왼쪽에는 영조의 효심이 머문 자리 01 용양봉저정, 가운데는 절개의 정신을 기리는 공간 02 사육신 역사공원, 오른쪽에는 대한민국을 지켜낸 03 국립서울 현충원이 순서대로 정렬되어 있습니다.";
+            }
+        }
+
+        utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = 'ko-KR'; // 한국어로 발음 설정
+        utterance.rate = 1.0;     // 보통 빠르기 속도
+        
+        utterance.onend = function() {
+            // 재생이 모두 끝나면 버튼 상태 해제
+            isReadingTTS = false;
+            btnTTS.classList.remove('active');
+        };
+
+        synth.speak(utterance);
+        isReadingTTS = true;
+        btnTTS.classList.add('active');
+    }
+
+    function stopBrochureTTS() {
+        synth.cancel();
+        isReadingTTS = false;
+        btnTTS.classList.remove('active');
+    }
+
+    // TTS 버튼 클릭
+    btnTTS.addEventListener('click', function() {
+        if (isReadingTTS) {
+            stopBrochureTTS();
+        } else {
+            playBrochureTTS();
+        }
+    });
+
+    // 🎵 [4번 배경음악 켜기/끄기 로직]
+    function toggleMusic() {
+        if (isPlayingMusic) {
+            bgm.pause();
+            isPlayingMusic = false;
+            btnMusic.classList.remove('active');
+        } else {
+            bgm.play().then(function() {
+                isPlayingMusic = true;
+                btnMusic.classList.add('active');
+            }).catch(function(err) {
+                console.log("브라우저 자동 재생 정책으로 인해 유저 액션이 우선되어야 합니다.");
+            });
+        }
+    }
+
+    btnMusic.addEventListener('click', toggleMusic);
+
+    // ♿️ [웹 접근성 핵심!] 자판 핫키(단축키) 감지 시스템
+    document.addEventListener('keydown', function(e) {
+        var key = e.key.toLowerCase();
+        
+        // S(Speech)를 누르면 목소리 낭독 시작/중단
+        if (key === 's') {
+            e.preventDefault();
+            if (isReadingTTS) {
+                stopBrochureTTS();
+            } else {
+                playBrochureTTS();
+            }
+        }
+        
+        // M(Music)을 누르면 배경음악 플레이
+        if (key === 'm') {
+            e.preventDefault();
+            toggleMusic();
+        }
+    });
 
     // 3D 회전 마우스 드래그 이벤트
     scene.addEventListener('mousedown', function(e) {
