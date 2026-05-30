@@ -10,8 +10,7 @@
             
             /* 
                💎 [초고해상도 뼈대 설정] 
-               패널 한 칸의 물리 크기를 대폭 상향 (A4 가로 비율 완벽 일치)
-               전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
+               가운데 패널 너비(660px) * 3 = 전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
             */
             --panel-w: 660px;
             --panel-h: 1400px;
@@ -26,7 +25,7 @@
             --scene-scale: 0.45; 
 
             /* 
-               [깃허브 이미지 파일 매칭 설정]
+               [깃허브 이미지 연결 설정]
                - front.png : 등산객 표지, 코스안내, 용양봉저정 지도가 그려진 겉면 이미지
                - back.png  : 01, 02, 03 숫자가 그려진 안쪽면 상세 이미지
             */
@@ -164,17 +163,10 @@
             margin-left: -990px;
             margin-top: -700px;
             transform-origin: center center;
-
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             
-            /* 기본 JS 각도 및 확대 조절용 CSS 변수 */
-            --rotX: -8;
-            --rotY: -15;
-            --zoom: 1;
-
-            /* 🔄 rotateY를 앞에 배치하여 부드러운 수평 회전축 유지 */
-            transform: scale(calc(var(--scene-scale) * var(--zoom))) rotateY(calc(var(--rotY) * 1deg)) rotateX(calc(var(--rotX) * 1deg));
+            /* 브라우저 호환성을 위해 JS에서 style.transform으로 직접 제어 */
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         /* ── 패널 기본 ── */
@@ -202,7 +194,7 @@
             image-rendering: auto;
         }
 
-        /* ── 📰 앞면 매핑 (안쪽 상세면 back.png: 정면에서 봤을 때 01 ➡️ 02 ➡️ 03 순서 정렬) ── */
+        /* ── 📰 안쪽 상세면 (내지 back.png: 정면에서 봤을 때 01 ➡️ 02 ➡️ 03 순서 정렬) ── */
         /* 패널4: 화면 왼쪽 패널 -> back.png의 맨 우측인 [01 용양봉저정 100%] 매핑 */
         .panel-left > .panel-front {
             background-image: var(--img-back);
@@ -219,8 +211,8 @@
             background-position: 0% center;
         }
 
-        /* ── 🗺️ 뒷면 매핑 (겉면 front.png: 뒤집었을 때 화면 왼쪽부터 표지 ➡️ 코스안내 ➡️ 용양봉저정 지도 정렬) ── */
-        /* 🔄 패널5: 뒷면 왼쪽 패널 (뒤집으면 우측에 배치되므로 이미지 우측인 [용양봉저정 공원 지도 0%] 매핑) */
+        /* ── 🗺️ 겉면 (표지 및 지도 front.png: 뒤집었을 때 화면 왼쪽부터 표지 ➡️ 코스안내 ➡️ 용양봉저정 지도 정렬) ── */
+        /* 🔄 패널5: 뒷면 왼쪽 패널 (뒤집으면 우측에 배치되므로 이미지 맨 좌측인 [용양봉저정 공원 지도 0%] 매핑!) */
         .panel-left > .panel-back {
             background-image: var(--img-front);
             background-position: 0% center;
@@ -287,7 +279,7 @@
         }
 
         /* ── 접기 애니메이션 ── */
-        /* 🎯 [표지 전면 배치 교정] 오른쪽 표지 패널이 왼쪽 날개 위를 부드럽게 덮으며 가장 앞(translateZ 2px)에 오도록 세팅 */
+        /* 🎯 [표지 전면 배치 핵심] 오른쪽 표지 패널이 왼쪽 날개 위를 부드럽게 덮으며 가장 앞(translateZ 2px)에 오도록 세팅 */
         .leaflet.folded .panel-left  { transform: rotateY(180deg) translateZ(0.5px); }
         .leaflet.folded .panel-right { transform: rotateY(-180deg) translateZ(2px); }
         
@@ -483,12 +475,13 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.classList.add(state);
     }
 
-    // CSS 변수값 실시간 갱신
+    // ⚡️ [버그 해결] 브라우저 호환성을 고려해 scale과 rotate 값을 JS 문자열로 완벽하게 변환해 직접 제어!
     function updateTransform() {
-        leaflet.style.setProperty('--rotX', curRotX);
-        leaflet.style.setProperty('--rotY', curRotY);
-        leaflet.style.setProperty('--zoom', zoomLevel);
+        leaflet.style.transform = 'scale(calc(var(--scene-scale) * ' + zoomLevel + ')) rotateY(' + curRotY + 'deg) rotateX(' + curRotX + 'deg)';
     }
+
+    // 초기 상태 한 번 랜더링 적용
+    updateTransform();
 
     btnFolded.addEventListener('click', function() { setState('folded'); setActive(btnFolded); });
     btnHalf.addEventListener('click',   function() { setState('half');   setActive(btnHalf);   });
