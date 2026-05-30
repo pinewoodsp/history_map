@@ -10,7 +10,6 @@
             
             /* 
                💎 [초고해상도 뼈대 설정] 
-               실제 고화질 이미지 크기 그대로 매핑하기 위해 패널 한 칸의 물리 크기를 대폭 상향 (A4 가로 비율 완벽 일치)
                가운데 패널 너비(660px) * 3 = 전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
             */
             --panel-w: 660px;
@@ -192,34 +191,28 @@
         }
 
         /* ── 앞면 이미지 매핑 ── */
-        /* 패널4: 앞면 왼쪽 (좌측 1/3) */
         .panel-left > .panel-front {
             background-image: var(--img-front);
             background-position: 0% center;
         }
-        /* 패널3: 앞면 가운데 (중간 1/3) */
         .panel-center > .panel-front {
             background-image: var(--img-front);
             background-position: 50% center;
         }
-        /* 패널2: 앞면 오른쪽 (우측 1/3) */
         .panel-right > .panel-front {
             background-image: var(--img-front);
             background-position: 100% center;
         }
 
         /* ── 뒷면 이미지 매핑 (인쇄용 표준 템플릿 방향 완벽 매칭) ── */
-        /* 패널5: 뒷면 왼쪽 (템플릿 상의 맨 왼쪽 1/3 부분 매핑) */
         .panel-left > .panel-back {
             background-image: var(--img-back);
             background-position: 0% center;
         }
-        /* 패널6: 뒷면 가운데 (템플릿 상의 중간 1/3 부분 매핑) */
         .panel-center > .panel-back {
             background-image: var(--img-back);
             background-position: 50% center;
         }
-        /* 패널1: 표지 (템플릿 상의 맨 오른쪽 1/3 부분 매핑) */
         .panel-right > .panel-back {
             background-image: var(--img-back);
             background-position: 100% center;
@@ -256,7 +249,7 @@
             pointer-events: none;
         }
 
-        /* ── 패널 위치 (초고화질 해상도 규격 적용) ── */
+        /* ── 패널 위치 ── */
         .panel-left {
             left: 0px;
             top: 0;
@@ -355,7 +348,7 @@
             line-height: 1.7;
         }
 
-        /* ── 📱 반응형 화면 맞춤 스케일 제어 (원본 화질에 아무런 악영향을 주지 않음) ── */
+        /* ── 📱 반응형 화면 맞춤 스케일 제어 ── */
         @media (max-width: 1200px) {
             :root { --scene-scale: 0.36; }
             .scene { width: 800px; height: 560px; }
@@ -401,18 +394,18 @@
     <div class="scene" id="scene">
         <div class="leaflet folded" id="leaflet">
 
-            <!-- 왼쪽 패널: 앞면=패널4(앞면좌), 뒷면=패널5(뒷면좌) -->
+            <!-- 왼쪽 패널 -->
             <div class="panel panel-left">
                 <div class="panel-face panel-front"></div>
                 <div class="panel-face panel-back"></div>
             </div>
 
-            <!-- 가운데 패널: 앞면=패널3(앞면중), 뒷면=패널6(뒷면중) -->
+            <!-- 가운데 패널 -->
             <div class="panel panel-center">
                 <div class="panel-face panel-front"></div>
                 <div class="panel-face panel-back"></div>
 
-                <!-- 오른쪽 패널(가운데 안에 중첩): 앞면=패널2(앞면우), 뒷면=패널1(표지) -->
+                <!-- 오른쪽 패널(가운데 안에 중첩) -->
                 <div class="panel panel-right">
                     <div class="panel-face panel-front"></div>
                     <div class="panel-face panel-back"></div>
@@ -469,7 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.classList.add(state);
     }
 
-    // CSS 변수값만 부드럽게 실시간 갱신하여 렌더링 성능 및 원본 화질 유지
     function updateTransform() {
         leaflet.style.setProperty('--rotX', curRotX);
         leaflet.style.setProperty('--rotY', curRotY);
