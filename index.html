@@ -7,19 +7,25 @@
     <style>
         :root {
             --bg: #d6cfc4;
-            /* 💎 화질 개선을 위해 물리적 픽셀 크기를 약 2.5배인 고해상도로 상향 조정 */
-            --panel-w: 330px;
-            --panel-h: 700px;
+            
+            /* 
+               💎 [초고해상도 뼈대 설정] 
+               실제 고화질 이미지 크기 그대로 매핑하기 위해 패널 한 칸의 물리 크기를 대폭 상향 (A4 가로 비율 완벽 일치)
+               가운데 패널 너비(660px) * 3 = 전체 너비 1980px, 높이 1400px의 초고화질 도화지 생성
+            */
+            --panel-w: 660px;
+            --panel-h: 1400px;
+            
             --ctrl-bg: #2b2118;
             --btn-border: #b89060;
             --btn-text: #e8d5b0;
             --btn-active-bg: #7a5230;
             --fold-line: rgba(0,0,0,0.18);
             
-            /* 📱 모바일/PC 반응형 크기 조절을 위한 기본 스케일 값 */
-            --scene-scale: 1; 
+            /* 📱 모니터 크기에 맞춰 화면에 알맞게 줄여서(Scale-Down) 보여주기 위한 기본 배율 */
+            --scene-scale: 0.45; 
 
-            /* 깃허브 페이지 이미지 매핑 */
+            /* 깃허브 이미지 파일 연결 */
             --img-front: url('./front.png');
             --img-back: url('./back.png');
         }
@@ -42,6 +48,8 @@
             padding: 28px 20px 14px;
             background: var(--ctrl-bg);
             color: #e8d5b0;
+            position: relative;
+            z-index: 10;
         }
 
         .controls h2 {
@@ -122,15 +130,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            min-height: 600px;
+            padding: 40px 20px;
+            min-height: 720px;
             background: var(--bg);
             background-image: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.18) 0%, transparent 70%);
         }
 
         .scene {
             width: 1000px;
-            height: 750px;
+            height: 720px;
             perspective: 2500px;
             cursor: grab;
             display: flex;
@@ -141,18 +149,18 @@
         .scene:active { cursor: grabbing; }
 
         .leaflet {
-            width: 990px; /* 고해상도 패널 3개 너비 합 (330px * 3) */
+            width: 1980px; /* 초고화질 패널 3개 너비 합 (660px * 3) */
             height: var(--panel-h);
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             
-            /* 기본 JS 제어용 CSS 변수 선언 */
+            /* 기본 JS 각도 및 확대 조절용 CSS 변수 */
             --rotX: -8;
             --rotY: -15;
             --zoom: 1;
 
-            /* ⚡️ 스케일 곱연산을 적용하여 원본 화질을 유지하며 부드럽게 화면 배율 조절 */
+            /* ⚡️ 초고화질 원본 해상도를 보존한 채로 화면에 맞게 곱 연산 축소(Scale-down) */
             transform: scale(calc(var(--scene-scale) * var(--zoom))) rotateX(calc(var(--rotX) * 1deg)) rotateY(calc(var(--rotY) * 1deg));
         }
 
@@ -169,17 +177,21 @@
             position: absolute;
             width: 100%;
             height: 100%;
+            -webkit-backface-visibility: hidden; /* 사파리 깨짐 방지 */
             backface-visibility: hidden;
             background-size: 300% 100%;
             background-repeat: no-repeat;
             overflow: hidden;
 
-            /* ✨ 극강의 선명도를 유지하기 위한 하드웨어 가속 유도 */
-            transform: translateZ(0);
+            /* ✨ 하드웨어 GPU 가속 유도로 3D 회전 시 뭉개짐(블러) 완벽 차단 */
+            transform: translateZ(0.1px); 
             will-change: transform;
+            
+            /* 이미지를 뭉개지 않고 부드럽고 섬세하게 렌더링 */
+            image-rendering: auto;
         }
 
-        /* ── 앞면 이미지 매핑 (기본 유지) ── */
+        /* ── 앞면 이미지 매핑 ── */
         /* 패널4: 앞면 왼쪽 (좌측 1/3) */
         .panel-left > .panel-front {
             background-image: var(--img-front);
@@ -196,8 +208,8 @@
             background-position: 100% center;
         }
 
-        /* ── 뒷면 이미지 매핑 (인쇄 템플릿 표준 순서로 방향 대폭 교정) ── */
-        /* 🔄 패널5: 뒷면 왼쪽 (템플릿 상의 맨 왼쪽 1/3 부분 매핑) */
+        /* ── 뒷면 이미지 매핑 (인쇄용 표준 템플릿 방향 완벽 매칭) ── */
+        /* 패널5: 뒷면 왼쪽 (템플릿 상의 맨 왼쪽 1/3 부분 매핑) */
         .panel-left > .panel-back {
             background-image: var(--img-back);
             background-position: 0% center;
@@ -207,7 +219,7 @@
             background-image: var(--img-back);
             background-position: 50% center;
         }
-        /* 🔄 패널1: 표지 (템플릿 상의 맨 오른쪽 1/3 부분 매핑) */
+        /* 패널1: 표지 (템플릿 상의 맨 오른쪽 1/3 부분 매핑) */
         .panel-right > .panel-back {
             background-image: var(--img-back);
             background-position: 100% center;
@@ -215,12 +227,12 @@
 
         /* ── 그림자 & 테두리 ── */
         .panel-face {
-            border: 0.5px solid rgba(0,0,0,0.12);
-            box-shadow: 3px 3px 18px rgba(0,0,0,0.22);
+            border: 1px solid rgba(0,0,0,0.15);
+            box-shadow: 5px 5px 30px rgba(0,0,0,0.25);
         }
 
         .panel-back {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg) translateZ(0.1px);
         }
 
         /* ── 접선 (점선) ── */
@@ -230,7 +242,7 @@
             position: absolute;
             top: 0; bottom: 0; right: 0;
             width: 0;
-            border-right: 1px dashed rgba(255,255,255,0.35);
+            border-right: 2px dashed rgba(255,255,255,0.3);
             pointer-events: none;
         }
 
@@ -240,11 +252,11 @@
             position: absolute;
             top: 0; bottom: 0; right: 0;
             width: 0;
-            border-right: 1px dashed rgba(255,255,255,0.35);
+            border-right: 2px dashed rgba(255,255,255,0.3);
             pointer-events: none;
         }
 
-        /* ── 패널 위치 (고해상도 치수에 맞춰 재조정) ── */
+        /* ── 패널 위치 (초고화질 해상도 규격 적용) ── */
         .panel-left {
             left: 0px;
             top: 0;
@@ -252,13 +264,13 @@
         }
 
         .panel-center {
-            left: 330px;
+            left: 660px;
             top: 0;
             transform-style: preserve-3d;
         }
 
         .panel-right {
-            left: 330px;
+            left: 660px;
             top: 0;
             transform-origin: left center;
         }
@@ -280,6 +292,8 @@
             border-radius: 12px;
             border: 1px solid #d4bc9a;
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 10;
         }
 
         .panel-info h3 {
@@ -341,22 +355,22 @@
             line-height: 1.7;
         }
 
-        /* ── 📱 화면 크기에 맞춰 스케일 변수 조절 (레이아웃 수치 고정으로 흐려짐 완벽 방지) ── */
+        /* ── 📱 반응형 화면 맞춤 스케일 제어 (원본 화질에 아무런 악영향을 주지 않음) ── */
         @media (max-width: 1200px) {
-            :root { --scene-scale: 0.75; }
-            .scene { width: 800px; height: 600px; }
+            :root { --scene-scale: 0.36; }
+            .scene { width: 800px; height: 560px; }
         }
         @media (max-width: 900px) {
-            :root { --scene-scale: 0.55; }
-            .scene { width: 600px; height: 480px; }
+            :root { --scene-scale: 0.25; }
+            .scene { width: 560px; height: 420px; }
         }
-        @media (max-width: 650px) {
-            :root { --scene-scale: 0.42; }
-            .scene { width: 450px; height: 380px; }
+        @media (max-width: 600px) {
+            :root { --scene-scale: 0.17; }
+            .scene { width: 380px; height: 300px; }
         }
-        @media (max-width: 480px) {
-            :root { --scene-scale: 0.32; }
-            .scene { width: 350px; height: 300px; }
+        @media (max-width: 400px) {
+            :root { --scene-scale: 0.13; }
+            .scene { width: 300px; height: 240px; }
         }
     </style>
 </head>
@@ -373,10 +387,10 @@
         <button id="btn-flip">🔄 뒤집기</button>
     </div>
     
-    <!-- 🔍 확대/축소 컨트롤러 -->
+    <!-- 🔍 확대/축소 슬라이더 -->
     <div class="zoom-control">
         <span>🔍 확대/축소 :</span>
-        <input type="range" id="zoom-range" min="0.5" max="2" step="0.05" value="1">
+        <input type="range" id="zoom-range" min="0.5" max="2.5" step="0.05" value="1">
         <span id="zoom-value">100%</span>
     </div>
 
@@ -455,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.classList.add(state);
     }
 
-    // ⚡️ CSS 변수값만 업데이트하여 브라우저 리드로우를 최소화하고 부드러운 고화질 실시간 렌더링 유지
+    // CSS 변수값만 부드럽게 실시간 갱신하여 렌더링 성능 및 원본 화질 유지
     function updateTransform() {
         leaflet.style.setProperty('--rotX', curRotX);
         leaflet.style.setProperty('--rotY', curRotY);
@@ -486,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
     scene.addEventListener('wheel', function(e) {
         e.preventDefault();
         if (e.deltaY < 0) {
-            zoomLevel = Math.min(2, zoomLevel + 0.05);
+            zoomLevel = Math.min(2.5, zoomLevel + 0.05);
         } else {
             zoomLevel = Math.max(0.5, zoomLevel - 0.05);
         }
