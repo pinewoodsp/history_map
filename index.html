@@ -24,7 +24,11 @@
             /* 📱 모니터 크기에 맞춰 화면에 알맞게 줄여서(Scale-Down) 보여주기 위한 기본 배율 */
             --scene-scale: 0.45; 
 
-            /* 깃허브 이미지 파일 연결 */
+            /* 
+               [깃허브 이미지 매치 공식]
+               - front.png : 등산객 표지가 있는 겉면 이미지
+               - back.png  : 01, 02, 03이 적혀있는 안쪽면 상세 이미지
+            */
             --img-front: url('./front.png');
             --img-back: url('./back.png');
         }
@@ -197,37 +201,37 @@
             image-rendering: auto;
         }
 
-        /* ── 앞면 이미지 매핑 (순서 교정: 01, 02, 03 순서로 정방향 정렬) ── */
+        /* ── 앞면 이미지 매핑 (안쪽면 back.png: 01, 02, 03 순서로 정방향 정렬) ── */
         /*  패널4: 화면 왼쪽 패널 -> 이미지의 우측 1/3인 [01 용양봉저정]을 보여줌 */
         .panel-left > .panel-front {
-            background-image: var(--img-front);
+            background-image: var(--img-back);
             background-position: 100% center;
         }
         /*  패널3: 화면 가운데 패널 -> 이미지의 중간 1/3인 [02 사육신 역사공원]을 보여줌 */
         .panel-center > .panel-front {
-            background-image: var(--img-front);
+            background-image: var(--img-back);
             background-position: 50% center;
         }
         /*  패널2: 화면 오른쪽 패널 -> 이미지의 좌측 1/3인 [03 국립서울 현충원]을 보여줌 */
         .panel-right > .panel-front {
-            background-image: var(--img-front);
+            background-image: var(--img-back);
             background-position: 0% center;
         }
 
-        /* ── 뒷면 이미지 매핑 (인쇄용 표준 템플릿 방향 완벽 매칭) ── */
-        /* 패널5: 뒷면 왼쪽 (템플릿 상의 맨 왼쪽 1/3 부분 매핑) */
+        /* ── 뒷면 이미지 매핑 (겉면 front.png: 표지, 지도, 추천코스) ── */
+        /* 패널5: 겉면 왼쪽 (안쪽 날개 - 추천 코스) */
         .panel-left > .panel-back {
-            background-image: var(--img-back);
+            background-image: var(--img-front);
             background-position: 0% center;
         }
-        /* 패널6: 뒷면 가운데 (템플릿 상의 중간 1/3 부분 매핑) */
+        /* 패널6: 겉면 가운데 (뒷 표지 - 지도 안내) */
         .panel-center > .panel-back {
-            background-image: var(--img-back);
+            background-image: var(--img-front);
             background-position: 50% center;
         }
-        /* 패널1: 표지 (템플릿 상의 맨 오른쪽 1/3 부분 매핑) */
+        /* 패널1: 표지 (접었을 때 맨 앞으로 오는 메인 등산객 표지) */
         .panel-right > .panel-back {
-            background-image: var(--img-back);
+            background-image: var(--img-front);
             background-position: 100% center;
         }
 
@@ -282,12 +286,15 @@
         }
 
         /* ── 접기 애니메이션 ── */
-        .leaflet.folded .panel-left  { transform: rotateY(180deg); }
-        .leaflet.folded .panel-right { transform: rotateY(-180deg); }
-        .leaflet.half   .panel-left  { transform: rotateY(90deg); }
-        .leaflet.half   .panel-right { transform: rotateY(-90deg); }
-        .leaflet.open   .panel-left  { transform: rotateY(0deg); }
-        .leaflet.open   .panel-right { transform: rotateY(0deg); }
+        /* 🎯 [표지 전면 배치 핵심] 오른쪽 표지 패널이 왼쪽 날개 위를 부드럽게 덮으며 가장 앞으로 오도록 Z축 값 정밀 설계 */
+        .leaflet.folded .panel-left  { transform: rotateY(176deg) translateZ(0.5px); }
+        .leaflet.folded .panel-right { transform: rotateY(-179deg) translateZ(2px); }
+        
+        .leaflet.half   .panel-left  { transform: rotateY(90deg) translateZ(0px); }
+        .leaflet.half   .panel-right { transform: rotateY(-90deg) translateZ(0px); }
+        
+        .leaflet.open   .panel-left  { transform: rotateY(0deg) translateZ(0px); }
+        .leaflet.open   .panel-right { transform: rotateY(0deg) translateZ(0px); }
 
         /* ── 하단 안내 패널 ── */
         .panel-info {
