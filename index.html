@@ -143,6 +143,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative; /* 자식 absolute 배치를 위해 기준 설정 */
         }
 
         .scene:active { cursor: grabbing; }
@@ -150,7 +151,15 @@
         .leaflet {
             width: 1980px; /* 초고화질 패널 3개 너비 합 (660px * 3) */
             height: var(--panel-h);
-            position: relative;
+            
+            /* 🎯 [정중앙 절대 고정 공식] */
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -990px; /* 정확한 중앙 매칭을 위해 너비의 절반만큼 이동 */
+            margin-top: -700px;  /* 정확한 중앙 매칭을 위해 높이의 절반만큼 이동 */
+            transform-origin: center center; /* 회전 기준축을 물리적 중심에 완벽 고정 */
+
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             
@@ -159,8 +168,8 @@
             --rotY: -15;
             --zoom: 1;
 
-            /* ⚡️ 초고화질 원본 해상도를 보존한 채로 화면에 맞게 곱 연산 축소(Scale-down) */
-            transform: scale(calc(var(--scene-scale) * var(--zoom))) rotateX(calc(var(--rotX) * 1deg)) rotateY(calc(var(--rotY) * 1deg));
+            /* 🔄 [회전축 어긋남 해결] rotateY를 rotateX보다 앞에 두어 글로벌 수직축을 기준으로 깔끔하게 회전하게 함 */
+            transform: scale(calc(var(--scene-scale) * var(--zoom))) rotateY(calc(var(--rotY) * 1deg)) rotateX(calc(var(--rotX) * 1deg));
         }
 
         /* ── 패널 기본 ── */
@@ -462,6 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
         leaflet.classList.add(state);
     }
 
+    // CSS 변수값만 부드럽게 실시간 갱신
     function updateTransform() {
         leaflet.style.setProperty('--rotX', curRotX);
         leaflet.style.setProperty('--rotY', curRotY);
